@@ -6,6 +6,7 @@ import LoginPage from './Login.jsx'
 import RegisterPage from './Register.jsx'
 import ContactInfo from './ContactInfo.jsx'
 import MovieDetails from './MovieDetails.jsx'
+import UserInfoPage from './User.jsx'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -27,6 +28,9 @@ const router = createBrowserRouter([{
   },{
     path: "movie/:id",
     element: <MovieDetails/>,
+  },{
+    path: "user",
+    element: <UserInfoPage/>,
   }
 ],
 }]);

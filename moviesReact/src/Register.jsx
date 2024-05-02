@@ -48,7 +48,7 @@ export default function RegisterPage() {
         )}
         {!valid && (
           <input
-            class="form-field"
+            className="form-field"
             type="text"
             placeholder="Username"
             name="username"
@@ -63,7 +63,7 @@ export default function RegisterPage() {
 
         {!valid && (
           <input
-            class="form-field"
+            className="form-field"
             type="email"
             placeholder="Email"
             name="email"
@@ -78,7 +78,7 @@ export default function RegisterPage() {
 
         {!valid && (
           <input
-            class="form-field"
+            className="form-field"
             type="email"
             placeholder="Repeat Email"
             name="email2"
@@ -96,7 +96,7 @@ export default function RegisterPage() {
     
         {!valid && (
         <input
-            class="form-field"
+            className="form-field"
             type="password"
             placeholder="Password"
             name="password"
@@ -111,7 +111,7 @@ export default function RegisterPage() {
 
         {!valid && (
         <input
-            class="form-field"
+            className="form-field"
             type="password"
             placeholder="Repeat Password"
             name="password2"
@@ -129,7 +129,7 @@ export default function RegisterPage() {
         )}
 
         {!valid && (
-          <button class="form-field" type="submit">
+          <button className="form-field" type="submit">
             Register
           </button>
         )}
