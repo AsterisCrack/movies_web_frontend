@@ -17,12 +17,6 @@ const router = createBrowserRouter([{
     path: "contactInfo",
     element: <ContactInfo/>,
   },{
-    path: "login",
-    element: <LoginPage/>,
-  },{
-    path: "register",
-    element: <RegisterPage/>,
-  },{
     path: "movie/:id",
     element: <MovieDetails/>,
   }
