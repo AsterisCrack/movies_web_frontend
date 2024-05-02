@@ -195,7 +195,7 @@ function Modal({ show, setShow, children }) {
 
 function ChangePasswordModal({ handleChangePasswordSubmit, handlePasswordInputchange, passwordValues, showPasswordError, passwordError, show, setShow}) {
     return Modal({ show, setShow, children: (
-        <form className="change-pass-form" onSubmit={handleChangePasswordSubmit}>
+        <form className="form change-pass-form" onSubmit={handleChangePasswordSubmit}>
             <input
                 className="form-field"
                 type="password"
@@ -228,7 +228,7 @@ function ChangePasswordModal({ handleChangePasswordSubmit, handlePasswordInputch
 
 function DeleteConfirmationModal({ handleDeleteAccountConfirm, deleteConfirmationPassword, setDeleteConfirmationPassword, showDeleteConfirmationError, deleteConfirmationError, show, setShow}) {
     return Modal({ show, setShow, children: (
-        <form className="delete-account-form" onSubmit={handleDeleteAccountConfirm}>
+        <form className="form delete-account-form" onSubmit={handleDeleteAccountConfirm}>
             <p>Are you sure you want to delete your account?</p>
             <input
                 className="form-field"

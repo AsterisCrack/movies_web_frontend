@@ -36,7 +36,7 @@ export default function RegisterPage() {
 
   return (
     <div className="form-container">
-      <form className="register-form" onSubmit={handleSubmit}>
+      <form className="form register-form" onSubmit={handleSubmit}>
         {submitted && valid && (
           <div className="success-message">
             <h3>
