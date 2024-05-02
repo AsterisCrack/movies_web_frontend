@@ -42,7 +42,7 @@ export default function RegisterPage() {
         )}
         {!valid && (
           <input
-            class="form-field"
+            className="form-field"
             type="text"
             placeholder="Username"
             name="username"
@@ -57,7 +57,7 @@ export default function RegisterPage() {
 
         {!valid && (
         <input
-            class="form-field"
+            className="form-field"
             type="password"
             placeholder="Password"
             name="password"
@@ -71,7 +71,7 @@ export default function RegisterPage() {
         )}
 
         {!valid && (
-          <button class="form-field" type="submit">
+          <button className="form-field" type="submit">
             Login
           </button>
         )}
