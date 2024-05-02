@@ -5,6 +5,7 @@ import ListPage from './ListPage.jsx'
 import LoginPage from './Login.jsx'
 import RegisterPage from './Register.jsx'
 import ContactInfo from './ContactInfo.jsx'
+import MovieDetails from './MovieDetails.jsx'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -23,6 +24,9 @@ const router = createBrowserRouter([{
   },{
     path: "register",
     element: <RegisterPage/>,
+  },{
+    path: "movie/:id",
+    element: <MovieDetails/>,
   }
 ],
 }]);
