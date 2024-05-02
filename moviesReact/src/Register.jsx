@@ -41,7 +41,7 @@ export default function RegisterPage() {
           <div className="success-message">
             <h3>
               {" "}
-              Welcome {values.firstName} {values.lastName}{" "}
+              Welcome {values.username}{" "}
             </h3>
             <div> Your registration was successful! </div>
           </div>

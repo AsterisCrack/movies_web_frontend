@@ -1,52 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export default function RegisterPage() {
+  const [values, setValues] = useState({
+    username: "",
+    password: ""
+  });
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
+  const handleInputChange = (event) => {
+    /* event.persist(); NO LONGER USED IN v.17*/
     event.preventDefault();
-    // Add your login logic here, such as sending a request to a server
-    console.log('Username:', username);
-    console.log('Password:', password);
+
+    const { name, value } = event.target;
+    setValues((values) => ({
+      ...values,
+      [name]: value
+    }));
+  };
+
+  const [submitted, setSubmitted] = useState(false);
+  const [valid, setValid] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (values.username && values.password) {
+        setValid(true);
+    }
+    setSubmitted(true);
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
+    <div className="form-container">
+      <form className="register-form" onSubmit={handleSubmit}>
+        {submitted && valid && (
+          <div className="success-message">
+            <h3>
+              {" "}
+              Welcome {values.username}{" "}
+            </h3>
+            <div> Your login was successful! </div>
+          </div>
+        )}
+        {!valid && (
           <input
+            class="form-field"
             type="text"
-            id="username"
-            value={username}
-            onChange={handleUsernameChange}
-            required
+            placeholder="Username"
+            name="username"
+            value={values.username}
+            onChange={handleInputChange}
           />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
+        )}
+
+        {submitted && !values.username && (
+          <span id="username-error">Please enter a username</span>
+        )}
+
+        {!valid && (
+        <input
+            class="form-field"
             type="password"
-            id="password"
-            value={password}
-            onChange={handlePasswordChange}
-            required
-          />
-        </div>
-        <button type="submit">Login</button>
+            placeholder="Password"
+            name="password"
+            value={values.password}
+            onChange={handleInputChange}
+        />
+        )} 
+
+        {submitted && !values.password && (
+            <span id="password-error">Please enter a password</span>
+        )}
+
+        {!valid && (
+          <button class="form-field" type="submit">
+            Login
+          </button>
+        )}
       </form>
     </div>
   );
-};
-
-export default LoginPage;
+}
