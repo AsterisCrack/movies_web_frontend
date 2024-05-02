@@ -1,122 +1,139 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const RegisterPage = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [repeatEmail, setRepeatEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isDisabled, setIsDisabled] = useState(true);
+export default function RegisterPage() {
+  const [values, setValues] = useState({
+    username: "",
+    email: "",
+    password: "",
+    email2: "",
+    password2: ""
+  });
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
-
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-    validateFields();
-  };
-
-  const handleRepeatEmailChange = (event) => {
-    setRepeatEmail(event.target.value);
-    validateFields();
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-    validateFields();
-  };
-
-  const handleRepeatPasswordChange = (event) => {
-    setRepeatPassword(event.target.value);
-    validateFields();
-  };
-
-  const validateFields = () => {
-    
-    if (email !== repeatEmail) {
-    setErrorMessage('Emails do not match');
-    setIsDisabled(true);
-    } else if (password !== repeatPassword) {
-    setErrorMessage('Passwords do not match');
-    setIsDisabled(true);
-    } else if (!username || !email || !repeatEmail || !password || !repeatPassword) {
-    setErrorMessage('All fields are required');
-    setIsDisabled(false);
-    } else {
-      setErrorMessage('');
-      setIsDisabled(true);
-    }
-  };
-
-  const handleSubmit = (event) => {
+  const handleInputChange = (event) => {
+    /* event.persist(); NO LONGER USED IN v.17*/
     event.preventDefault();
-    // Add your register logic here, such as sending a request to a server
-    console.log('Username:', username);
-    console.log('Email:', email);
-    console.log('Password:', password);
+
+    const { name, value } = event.target;
+    setValues((values) => ({
+      ...values,
+      [name]: value
+    }));
+  };
+
+  const [submitted, setSubmitted] = useState(false);
+  const [valid, setValid] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (values.username && values.email && values.password && values.email2 && values.password2) {
+        // Check if the email addresses match and if the passwords match
+        if ((values.email == values.email2) && (values.password == values.password2)) {
+            setValid(true);
+        }
+    }
+    setSubmitted(true);
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
+    <div className="form-container">
+      <form className="register-form" onSubmit={handleSubmit}>
+        {submitted && valid && (
+          <div className="success-message">
+            <h3>
+              {" "}
+              Welcome {values.firstName} {values.lastName}{" "}
+            </h3>
+            <div> Your registration was successful! </div>
+          </div>
+        )}
+        {!valid && (
           <input
+            class="form-field"
             type="text"
-            id="username"
-            value={username}
-            onChange={handleUsernameChange}
-            required
+            placeholder="Username"
+            name="username"
+            value={values.username}
+            onChange={handleInputChange}
           />
-        </div>
-        <div>
-          <label htmlFor="email">Email:</label>
+        )}
+
+        {submitted && !values.username && (
+          <span id="username-error">Please enter a username</span>
+        )}
+
+        {!valid && (
           <input
+            class="form-field"
             type="email"
-            id="email"
-            value={email}
-            onChange={handleEmailChange}
-            required
+            placeholder="Email"
+            name="email"
+            value={values.email}
+            onChange={handleInputChange}
           />
-        </div>
-        <div>
-          <label htmlFor="repeatEmail">Repeat Email:</label>
+        )}
+
+        {submitted && !values.email && (
+          <span id="last-name-error">Please enter an email address</span>
+        )}
+
+        {!valid && (
           <input
+            class="form-field"
             type="email"
-            id="repeatEmail"
-            value={repeatEmail}
-            onChange={handleRepeatEmailChange}
-            required
+            placeholder="Repeat Email"
+            name="email2"
+            value={values.email2}
+            onChange={handleInputChange}
           />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
+        )}
+
+        {submitted && !values.email2 && (
+          <span id="email-error">Please repeat your email address</span>
+        )}
+        {submitted && values.email2 && values.email2 != values.email && (
+          <span id="email-error">Email addresses do not match</span>
+        )}
+    
+        {!valid && (
+        <input
+            class="form-field"
             type="password"
-            id="password"
-            value={password}
-            onChange={handlePasswordChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="repeatPassword">Repeat Password:</label>
-          <input
+            placeholder="Password"
+            name="password"
+            value={values.password}
+            onChange={handleInputChange}
+        />
+        )} 
+
+        {submitted && !values.password && (
+            <span id="password-error">Please enter a password</span>
+        )}
+
+        {!valid && (
+        <input
+            class="form-field"
             type="password"
-            id="repeatPassword"
-            value={repeatPassword}
-            onChange={handleRepeatPasswordChange}
-            required
-          />
-        </div>
-        {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-        <button type="submit" disabled={isDisabled}>Register</button>
+            placeholder="Repeat Password"
+            name="password2"
+            value={values.password2}
+            onChange={handleInputChange}
+        />
+        )}
+
+        {submitted && !values.password2 && (
+            <span id="password-error">Please repeat your password</span>
+        )}
+
+        {submitted && values.password2 && values.password2 != values.password && (
+            <span id="password-error">Passwords do not match</span>
+        )}
+
+        {!valid && (
+          <button class="form-field" type="submit">
+            Register
+          </button>
+        )}
       </form>
     </div>
   );
-};
-
-export default RegisterPage;
+}
