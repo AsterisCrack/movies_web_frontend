@@ -7,10 +7,11 @@ import { NavLink } from 'react-router-dom';
 const INITIAL_PAGE = 1;
 const MOVIES_PER_PAGE = 3;
 
-function ListPage({movieList, currentPage, setCurrentPage, title, setTitle, description, setDescription, genre, setGenre, rating, setRating}) {
+function ListPage({movieList, currentPage, setCurrentPage, title, setTitle, description, setDescription, genre, setGenre, rating, setRating, orderBy, setOrderBy}) {
   return <div className="container">
     <h2>Our movies</h2>
     <PageFilter currentPage={currentPage} setCurrentPage={setCurrentPage}/>
+    <Ordering orderBy={orderBy} setOrderBy={setOrderBy}/>
     <Filter title={title} setTitle={setTitle} description={description} setDescription={setDescription} genre={genre} setGenre={setGenre} rating={rating} setRating={setRating}/>
     <MovieList movieList={movieList}/>
   </div>
@@ -38,6 +39,17 @@ function Filter({title, setTitle, description, setDescription, genre, setGenre, 
     <input type="text" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)}/>
     <input type="text" placeholder="Genre" value={genre} onChange={(e) => setGenre(e.target.value)}/>
     <input type="text" placeholder="Rating" value={rating} onChange={(e) => setRating(e.target.value)}/>
+  </div>
+}
+
+function Ordering({orderBy, setOrderBy}) {
+  return <div className="ordering">
+    <select value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
+      <option value="title">Title</option>
+      <option value="description">Description</option>
+      <option value="genre">Genre</option>
+      <option value="rating">Rating</option>
+    </select>
   </div>
 }
 
@@ -84,6 +96,8 @@ function App() {
   const [genre, setGenre] = useState('');
   const [rating, setRating] = useState('');
   const [movieList, setMovieList] = useState([]);
+  // Ordering by title, description, genre and rating
+  const [orderBy, setOrderBy] = useState('title');
 
   useEffect(() => {
     let skip = (currentPage - INITIAL_PAGE) * MOVIES_PER_PAGE;
@@ -104,7 +118,7 @@ function App() {
   }, [currentPage]);
 
   return (
-      <ListPage movieList={movieList} currentPage={currentPage} setCurrentPage={setCurrentPage} title={title} setTitle={setTitle} description={description} setDescription={setDescription} genre={genre} setGenre={setGenre} rating={rating} setRating={setRating}/>
+      <ListPage movieList={movieList} currentPage={currentPage} setCurrentPage={setCurrentPage} title={title} setTitle={setTitle} description={description} setDescription={setDescription} genre={genre} setGenre={setGenre} rating={rating} setRating={setRating} orderBy={orderBy} setOrderBy={setOrderBy}/>
   )
 }
 
