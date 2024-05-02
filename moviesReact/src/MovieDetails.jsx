@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import StarRating from './StarRating';
 
 function MovieDetails() {
   const id = window.location.pathname.split("/").pop();
   const [movie, setMovie] = useState({});
+  const [rating, setRating] = useState(0);
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -13,6 +15,7 @@ function MovieDetails() {
         }
         const data = await response.json();
         setMovie(data.products[0])
+        setRating(5);
       } catch (error) {
         console.error('Error fetching movies:', error);
       }
@@ -32,6 +35,7 @@ function MovieDetails() {
         <p>
           <strong>Stock:</strong> <span>{movie.stock}</span>
         </p>
+        <StarRating rating={rating} setRating={setRating} blocked={false} num_stars={5}/>
       </div>
     </main>
   </div>
