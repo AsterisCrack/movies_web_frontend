@@ -132,3 +132,7 @@ header {
   .buttons input[type="number"] {
     width: 35px 
   }
+
+  .star-label {
+    display:inline-block;
+  }

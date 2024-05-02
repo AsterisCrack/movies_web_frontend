@@ -15,7 +15,7 @@ function MovieDetails() {
         }
         const data = await response.json();
         setMovie(data.products[0])
-        setRating(5);
+        setRating(4);
       } catch (error) {
         console.error('Error fetching movies:', error);
       }

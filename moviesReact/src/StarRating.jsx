@@ -6,9 +6,10 @@ const StarRating = ({ rating, setRating, blocked, num_stars }) => {
     return (
         <div>
         {[...Array(num_stars)].map((star, i) => {
-            const ratingValue = i + 1;
+            const ratingValue = i;
+            
             return (
-            <label key={i}>
+            <label key={i} className='star-label'>
                 <input
                 type="radio"
                 name="rating"
@@ -20,10 +21,11 @@ const StarRating = ({ rating, setRating, blocked, num_stars }) => {
                 <FaStar
                 className="star"
                 // If blocked do not change color on hover
-                color={blocked ? (ratingValue <= rating ? "#ffc107" : "#e4e5e9") : (ratingValue <= (hover || rating) ? "#ffc107" : "#e4e5e9")}
-                size={30}
+                color={blocked ? (ratingValue < rating ? "#ffc107" : "#e4e5e9") : (ratingValue < (hover || rating) ? "#ffc107" : "#e4e5e9")}
+                size={ratingValue < rating ? Math.min(30, 30 * (rating-ratingValue)) : 30}
                 onMouseEnter={() => setHover(ratingValue)}
                 onMouseLeave={() => setHover(null)}
+                style={{cursor: blocked ? "default" : "pointer"}}
                 />
             </label>
             );
