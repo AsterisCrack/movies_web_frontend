@@ -222,3 +222,7 @@ header {
   .form button[type=submit]:hover {
     background: #0077cc;
   }
+
+  .star-label {
+    display:inline-block;
+  }
