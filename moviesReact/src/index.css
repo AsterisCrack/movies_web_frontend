@@ -208,7 +208,7 @@ header {
   .form button[type=submit] {
     display: block;
     margin: 20px auto 0;
-    width: 150px;
+    width: auto;
     height: 40px;
     border-radius: 25px;
     border: none;
