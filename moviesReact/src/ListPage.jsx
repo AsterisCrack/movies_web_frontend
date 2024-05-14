@@ -70,7 +70,10 @@ function Movie({movie}) {
         <p>
           <strong>Stock:</strong> <span>{movie.stock}</span>
         </p>
-        <StarRating rating={movie.rating} setRating={() => {}} blocked={true} num_stars={10}/>
+        <StarRating rating={movie.rating} setRating={() => {}} blocked={true} num_stars={5}/>
+        <p>
+          <strong>Rating:</strong> <span>{movie.rating}</span>
+        </p>
       </div>
     </div>)
 }
