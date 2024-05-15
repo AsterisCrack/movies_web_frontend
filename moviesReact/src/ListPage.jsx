@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import StarRating from './StarRating';
 import { NavLink } from 'react-router-dom';
+import GetUserData from './GetUserData';
 
 const INITIAL_PAGE = 1;
 const MOVIES_PER_PAGE = 3;
@@ -11,6 +12,60 @@ function ListPage({movieList, currentPage, setCurrentPage, title, setTitle, desc
     <PageFilter currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     <Filter title={title} setTitle={setTitle} description={description} setDescription={setDescription} genre={genre} setGenre={setGenre} rating={rating} setRating={setRating}/>
     <MovieList movieList={movieList}/>
+  </div>
+}
+
+function AdminAddMovie() {
+
+  const [addError, setAddError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    const payload = {
+      title: data.get('title'),
+      description: data.get('description'),
+      genre: data.get('genre'),
+      link_image: data.get('link_image'),
+      director: data.get('director'),
+      calification: data.get('calification'),
+    };
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/apps/movies/add/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        Object.keys(data).forEach((key) => {
+          setAddError(`${key}: ${data[key]}`);
+      });
+      }
+      //form.reset();
+    } catch (error) {
+      console.error('Error adding movie:', error);
+    }
+  }
+
+  return <div className="container">
+    <h2>Add movie</h2>
+    <form className="form add-movie-form" onSubmit={handleSubmit}>
+      <input className="form-field" type="text" name="title" placeholder="Title" required/>
+      <input className="form-field" type="text" name="description" placeholder="Description" required/>
+      <input className="form-field" type="text" name="genre" placeholder="Genre" required/>
+      <input className="form-field" type="text" name="link_image" placeholder="Image URL" required/>
+      <input className="form-field" type="text" name="director" placeholder="Director" required/>
+      <input className="form-field" type="number" name="calification" placeholder="Calification" min="0" max="10"required/>
+      {addError && <span className="span-error">{addError}</span>}
+      <button type="submit">Add movie</button>
+      
+    </form>
   </div>
 }
 
@@ -79,6 +134,9 @@ function Movie({movie}) {
 }
 
 function App() {
+  const [user, setUser] = useState({});
+  GetUserData({setUser});
+
   const [currentPage, setCurrentPage] = useState(INITIAL_PAGE);
   // Users can filter by title, description, gente and rating
   const [title, setTitle] = useState('');
@@ -106,7 +164,10 @@ function App() {
   }, [currentPage]);
 
   return (
+    <>
+      {user.username === "admin" && <AdminAddMovie />}
       <ListPage movieList={movieList} currentPage={currentPage} setCurrentPage={setCurrentPage} title={title} setTitle={setTitle} description={description} setDescription={setDescription} genre={genre} setGenre={setGenre} rating={rating} setRating={setRating}/>
+    </>
   )
 }
 

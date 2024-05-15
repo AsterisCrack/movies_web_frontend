@@ -1,6 +1,11 @@
 import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import GetUserData from "./GetUserData";
 
 export default function Header() {
+    const [user, setUser] = useState({});
+    GetUserData({setUser});
+
     return (<header>
         <h1>AG Movies</h1>
         <nav>
@@ -17,9 +22,12 @@ export default function Header() {
                 <li>
                     <NavLink to="/register">Register</NavLink>
                 </li>
-                <li>
-                    <NavLink to="/user">User</NavLink>
-                </li>
+                {user.username && (
+                    <li>
+                        <NavLink to="/user">{user.username}</NavLink>
+                    </li>
+                )}
+                
             </ul>
         </nav>
     </header>)
