@@ -63,9 +63,16 @@ header {
     text-align: center;
   }
   
-  .product-details {
+  .movie-details {
     display: flex;
-    margin-top: 20px;
+    margin-bottom: 50px;
+    padding: 10px;
+    border-bottom: 1px solid #d8d8d8;
+  }
+  .movie-details a {
+    text-decoration: none;
+    color: #333;
+    margin-bottom: 5px;
   }
   
   img {

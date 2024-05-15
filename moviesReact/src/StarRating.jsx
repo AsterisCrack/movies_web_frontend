@@ -10,17 +10,12 @@ const generateUniqueId = () => {
 const StarRating = ({ rating, setRating, blocked, num_stars }) => {
   const [hover, setHover] = useState(null);
 
-  const getColor = (index) => {
-    return index < rating ? "#ffc107" : "#e4e5e9";
-  };
-
   const getStarFraction = (index) => {
     const value = hover !== null ? hover : rating;
     if (value <= index) return 0;
     if (value < index + 1) return value - index;
     return 1;
   };
-
   return (
     <div>
       {[...Array(num_stars)].map((star, i) => {

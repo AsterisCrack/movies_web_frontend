@@ -6,22 +6,21 @@ import GetUserData from './GetUserData';
 const INITIAL_PAGE = 1;
 const MOVIES_PER_PAGE = 3;
 
-function ListPage({ movieList, currentPage, setCurrentPage, title, setTitle, description, setDescription, genre, setGenre, rating, setRating }) {
+function ListPage({ movieList, currentPage, setCurrentPage, title, setTitle, description, setDescription, genre, setGenre, rating, setRating, order, setOrder }) {
   return (
     <div className="container">
       <h2>Our movies</h2>
-      <PageFilter currentPage={currentPage} setCurrentPage={setCurrentPage} />
       <Filter 
         title={title} setTitle={setTitle} 
         description={description} setDescription={setDescription} 
-        genre={genre} setGenre={setGenre} 
-        rating={rating} setRating={setRating} />
+        rating={rating} setRating={setRating} 
+        setOrder={setOrder}/>
       <MovieList 
         movieList={movieList} 
         titleFilter={title} 
         descriptionFilter={description} 
         genreFilter={genre} 
-        ratingFilter={rating} />
+        order={order} />
     </div>
   );
 }
@@ -99,7 +98,7 @@ function PageFilter({ currentPage, setCurrentPage }) {
   );
 }
 
-function Filter({ title, setTitle, description, setDescription, genre, setGenre, rating, setRating }) {
+function Filter({ title, setTitle, description, setDescription, genre, setGenre, setOrder }) {
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
@@ -112,8 +111,9 @@ function Filter({ title, setTitle, description, setDescription, genre, setGenre,
     setGenre(e.target.value);
   };
 
-  const handleRatingChange = (e) => {
-    setRating(e.target.value);
+
+  const handleOrderChange = (e) => {
+    setOrder(e.target.value);
   };
 
   return (
@@ -121,14 +121,20 @@ function Filter({ title, setTitle, description, setDescription, genre, setGenre,
       <input type="text" placeholder="Title" value={title} onInput={handleTitleChange} />
       <input type="text" placeholder="Description" value={description} onInput={handleDescriptionChange} />
       <input type="text" placeholder="Genre" value={genre} onInput={handleGenreChange} />
-      <input type="text" placeholder="Rating" value={rating} onInput={handleRatingChange} />
+      <label htmlFor="order">Order by:</label>
+      <select value="title_asc" name="order" onChange={handleOrderChange}>
+            <option value="title_asc">Title (A-Z)</option>
+            <option value="title_desc">Title (Z-A)</option>
+            <option value="rating_asc">Rating (Low to High)</option>
+            <option value="rating_desc">Rating (High to Low)</option>
+        </select>
     </div>
   );
 }
 
 
 
-function MovieList({ movieList, titleFilter, descriptionFilter, genreFilter, ratingFilter }) {
+function MovieList({ movieList, titleFilter, descriptionFilter, genreFilter, order }) {
   let filteredMovies = movieList;
 
   // Apply filters
@@ -144,8 +150,15 @@ function MovieList({ movieList, titleFilter, descriptionFilter, genreFilter, rat
     filteredMovies = filteredMovies.filter(movie => movie.genre.toLowerCase().includes(genreFilter.toLowerCase()));
   }
 
-  if (ratingFilter) {
-    filteredMovies = filteredMovies.filter(movie => movie.calification.toString().toLowerCase().includes(ratingFilter.toLowerCase()));
+  // Apply sorting
+  if (order === 'title_asc') {
+    filteredMovies = filteredMovies.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (order === 'title_desc') {
+    filteredMovies = filteredMovies.sort((a, b) => b.title.localeCompare(a.title));
+  } else if (order === 'rating_asc') {
+    filteredMovies = filteredMovies.sort((a, b) => a.calification - b.calification);
+  } else if (order === 'rating_desc') {
+    filteredMovies = filteredMovies.sort((a, b) => b.calification - a.calification);
   }
 
   if (!filteredMovies) {
@@ -166,23 +179,20 @@ function Movie({ movie }) {
   return (
     <div className="movie-details" id="movieDetails">
       <NavLink to={`/movie/${movie.id}`}>
-        <img src={movie.link_image} alt="Thumbnail" id="thumbnail" />
+        <img src={movie.link_image} alt={movie.title} id="thumbnail" />
       </NavLink>
-      <div className="info">
+      <div className="movie-list-item">
         <NavLink to={`/movie/${movie.id}`}>
           <h2>{movie.title}</h2>
         </NavLink>
         <p>{movie.description}</p>
-        <StarRating rating={movie.calification} setRating={() => { }} blocked={true} num_stars={10} />
         <p>
           <strong>Genre:</strong> <span>{movie.genre}</span>
         </p>
         <p>
           <strong>Director:</strong> <span>{movie.director}</span>
         </p>
-        <p>
-          <strong>Rating:</strong> <span>{movie.calification}</span>
-        </p>
+        <StarRating rating={movie.calification/2} setRating={() => {}} blocked={true} num_stars={5} />
       </div>
     </div>
   );
@@ -198,6 +208,7 @@ function App() {
   const [description, setDescription] = useState('');
   const [genre, setGenre] = useState('');
   const [rating, setRating] = useState('');
+  const [order, setOrder] = useState('title_asc');
   const [movieList, setMovieList] = useState([]);
 
   useEffect(() => {
@@ -232,6 +243,8 @@ function App() {
       setGenre={setGenre}
       rating={rating}
       setRating={setRating}
+      order={order}
+      setOrder={setOrder}
     />
     </>
   );
