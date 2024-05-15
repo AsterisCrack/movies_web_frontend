@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import StarRating from './StarRating';
 import { NavLink } from 'react-router-dom';
 import GetUserData from './GetUserData';
+import { FaTrash } from 'react-icons/fa';
 
 const INITIAL_PAGE = 1;
 const MOVIES_PER_PAGE = 3;
 
-function ListPage({ movieList, currentPage, setCurrentPage, title, setTitle, description, setDescription, genre, setGenre, rating, setRating, order, setOrder }) {
+function ListPage({ movieList, currentPage, setCurrentPage, title, setTitle, description, setDescription, genre, setGenre, rating, setRating, order, setOrder, user }) {
   return (
     <div className="container">
       <h2>Our movies</h2>
@@ -14,13 +15,14 @@ function ListPage({ movieList, currentPage, setCurrentPage, title, setTitle, des
         title={title} setTitle={setTitle} 
         description={description} setDescription={setDescription} 
         rating={rating} setRating={setRating} 
-        setOrder={setOrder}/>
+        order={order} setOrder={setOrder}/>
       <MovieList 
         movieList={movieList} 
         titleFilter={title} 
         descriptionFilter={description} 
         genreFilter={genre} 
-        order={order} />
+        order={order} 
+        user={user}/>
     </div>
   );
 }
@@ -98,7 +100,7 @@ function PageFilter({ currentPage, setCurrentPage }) {
   );
 }
 
-function Filter({ title, setTitle, description, setDescription, genre, setGenre, setOrder }) {
+function Filter({ title, setTitle, description, setDescription, genre, setGenre, order, setOrder }) {
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
@@ -122,7 +124,7 @@ function Filter({ title, setTitle, description, setDescription, genre, setGenre,
       <input type="text" placeholder="Description" value={description} onInput={handleDescriptionChange} />
       <input type="text" placeholder="Genre" value={genre} onInput={handleGenreChange} />
       <label htmlFor="order">Order by:</label>
-      <select value="title_asc" name="order" onChange={handleOrderChange}>
+      <select value={order} name="order" onChange={handleOrderChange}>
             <option value="title_asc">Title (A-Z)</option>
             <option value="title_desc">Title (Z-A)</option>
             <option value="rating_asc">Rating (Low to High)</option>
@@ -134,7 +136,7 @@ function Filter({ title, setTitle, description, setDescription, genre, setGenre,
 
 
 
-function MovieList({ movieList, titleFilter, descriptionFilter, genreFilter, order }) {
+function MovieList({ movieList, titleFilter, descriptionFilter, genreFilter, order, user }) {
   let filteredMovies = movieList;
 
   // Apply filters
@@ -170,12 +172,33 @@ function MovieList({ movieList, titleFilter, descriptionFilter, genreFilter, ord
   
   return (
     <div>
-      {filteredMovies.map(movie => <Movie key={movie.id} movie={movie} />)}
+      {filteredMovies.map(movie => <Movie key={movie.id} movie={movie} user={user} />)}
     </div>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, user }) {
+  const handleDelete = async () => {
+    console.log(movie.id);
+    // Open a confirmation dialog
+    if (window.confirm(`Are you sure you want to delete ${movie.title}?`)) {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/apps/movies/delete/${movie.id}/`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          console.log('Error deleting movie');
+          throw new Error('Unable to delete movie');
+        }
+        // Reload the page
+        window.location.reload();
+      } catch (error) {
+        console.error('Error deleting movie:', error);
+      }
+    }
+  }
+
   return (
     <div className="movie-details" id="movieDetails">
       <NavLink to={`/movie/${movie.id}`}>
@@ -194,6 +217,7 @@ function Movie({ movie }) {
         </p>
         <StarRating rating={movie.calification/2} setRating={() => {}} blocked={true} num_stars={5} />
       </div>
+      {user.username === "admin" && <div className="delete-button-wrapper"><button className="delete-button" onClick={handleDelete}><FaTrash /></button></div>}
     </div>
   );
 }
@@ -208,7 +232,7 @@ function App() {
   const [description, setDescription] = useState('');
   const [genre, setGenre] = useState('');
   const [rating, setRating] = useState('');
-  const [order, setOrder] = useState('title_asc');
+  const [order, setOrder] = useState('rating_desc');
   const [movieList, setMovieList] = useState([]);
 
   useEffect(() => {
@@ -245,6 +269,7 @@ function App() {
       setRating={setRating}
       order={order}
       setOrder={setOrder}
+      user={user}
     />
     </>
   );

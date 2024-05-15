@@ -74,6 +74,41 @@ header {
     color: #333;
     margin-bottom: 5px;
   }
+
+  .mpvies-details a:hover {
+    color: #777;
+  }
+
+  .movie-details .delete-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .movie-details .delete-button {
+    background-color: #ff0000;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .movie-details {
+    display: flex;                     /* Use flexbox */
+    align-items: center;               /* Vertically center items (optional) */
+    justify-content: space-between;    /* Space out the items evenly, pushing the delete button to the right */
+    padding: 10px;                     /* Add some padding */
+  }
+  
+  .movie-list-item {
+    flex-grow: 1;                      /* Allow the movie content to take up remaining space */
+  }
+  
+  .movie-details .delete-button-wrapper {
+    margin-left: auto;                 /* Push the delete button to the right */
+    padding-left: 20px;                /* Add some space to the left of the delete button */
+  }
   
   img {
     width: 200px;
