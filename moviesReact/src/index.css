@@ -227,10 +227,11 @@ header {
     display:inline-block;
   }
 
-  span.span-error {
-    background-color: #ffb6b6;
-    padding: 4px;
-    border: 2px solid #ff4c4c;
+  .span-error {
+    background-color: #ffe5e5;
+    padding: 2px 4px;
+    border: 2px solid #ffc1c1;
+    margin-bottom: 5px;
     color: black;
     font-size: 90%;
     border-radius: 10px;

@@ -52,8 +52,8 @@ export default function RegisterPage() {
                       username: values.username,
                       email: values.email,
                       password: values.password,
-                      name: values.name,
-                      phone: values.phone,
+                      nombre: values.name,
+                      tel: values.phone,
                   }),
               });
               if (response.ok) {
@@ -94,7 +94,7 @@ export default function RegisterPage() {
         )}
 
         {submitted && !values.username && (
-          <span id="span-error username-error">Please enter a username</span>
+          <span class="span-error" id="username-error">Please enter a username</span>
         )}
 
         {!valid && (
@@ -109,7 +109,7 @@ export default function RegisterPage() {
         )}
 
         {submitted && !values.email && (
-          <span id="span-error name-error">Please enter an email address</span>
+          <span class="span-error" id="name-error">Please enter an email address</span>
         )}
 
         {!valid && (
@@ -124,10 +124,10 @@ export default function RegisterPage() {
         )}
 
         {submitted && !values.email2 && (
-          <span id="span-error email-error">Please repeat your email address</span>
+          <span class="span-error" id="email-error">Please repeat your email address</span>
         )}
         {submitted && values.email2 && values.email2 != values.email && (
-          <span id="span-error email-error">Email addresses do not match</span>
+          <span class="span-error" id="email-error">Email addresses do not match</span>
         )}
 
         {!valid && (
@@ -142,7 +142,7 @@ export default function RegisterPage() {
         )}
 
         {submitted && !values.name && (
-          <span id="span-error name-error">Please enter your name</span>
+          <span class="span-error" id="name-error">Please enter your name</span>
         )}
 
         {!valid && (
@@ -157,7 +157,7 @@ export default function RegisterPage() {
         )}
 
         {submitted && !values.phone && (
-          <span id="span-error phone-error">Please enter your phone number</span>
+          <span class="span-error" id="phone-error">Please enter your phone number</span>
         )}
     
         {!valid && (
@@ -172,7 +172,7 @@ export default function RegisterPage() {
         )} 
 
         {submitted && !values.password && (
-            <span id="span-error password-error">Please enter a password</span>
+            <span class="span-error" id="password-error">Please enter a password</span>
         )}
 
         {!valid && (
@@ -187,15 +187,15 @@ export default function RegisterPage() {
         )}
 
         {submitted && !values.password2 && (
-            <span id="span-error password-error">Please repeat your password</span>
+            <span class="span-error" id="password-error">Please repeat your password</span>
         )}
 
         {submitted && values.password2 && values.password2 != values.password && (
-            <span id="span-error password-error">Passwords do not match</span>
+            <span class="span-error" id="password-error">Passwords do not match</span>
         )}
 
         {submitted && values.password && !check_password_format(values.password) && (values.password == values.password2) && (
-            <span id="span-error password-error">Password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase</span>
+            <span class="span-error" id="password-error">Password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase</span>
         )}
 
         {!valid && (
