@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [values, setValues] = useState({
     username: "",
     password: ""
   });
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (event) => {
     /* event.persist(); NO LONGER USED IN v.17*/
@@ -18,12 +21,29 @@ export default function RegisterPage() {
   };
 
   const [submitted, setSubmitted] = useState(false);
-  const [valid, setValid] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (values.username && values.password) {
-        setValid(true);
+      setErrors({});
+      // Send the data to the server
+      const response = await fetch("http://127.0.0.1:8000/apps/users/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+        }),
+      });
+      if (response.ok) {
+        navigate("/");
+      } else {
+        console.log("Login failed");
+        setErrors({ message: "Invalid username or password" });
+      }
+
     }
     setSubmitted(true);
   };
@@ -31,31 +51,22 @@ export default function RegisterPage() {
   return (
     <div className="form-container">
       <form className="form register-form" onSubmit={handleSubmit}>
-        {submitted && valid && (
-          <div className="success-message">
-            <h3>
-              {" "}
-              Welcome {values.username}{" "}
-            </h3>
-            <div> Your login was successful! </div>
-          </div>
-        )}
-        {!valid && (
-          <input
-            className="form-field"
-            type="text"
-            placeholder="Username"
-            name="username"
-            value={values.username}
-            onChange={handleInputChange}
-          />
-        )}
+
+        <input
+          className="form-field"
+          type="text"
+          placeholder="Username"
+          name="username"
+          value={values.username}
+          onChange={handleInputChange}
+        />
+        
 
         {submitted && !values.username && (
-          <span id="username-error">Please enter a username</span>
+          <span className="span-error" id="username-error">Please enter a username</span>
         )}
 
-        {!valid && (
+  
         <input
             className="form-field"
             type="password"
@@ -64,17 +75,19 @@ export default function RegisterPage() {
             value={values.password}
             onChange={handleInputChange}
         />
-        )} 
+        
 
         {submitted && !values.password && (
-            <span id="password-error">Please enter a password</span>
+            <span className="span-error" id="password-error">Please enter a password</span>
+        )}
+        {errors.message && (
+          <span className="span-error" id="login-error">{errors.message}</span>
         )}
 
-        {!valid && (
-          <button className="form-field" type="submit">
-            Login
-          </button>
-        )}
+        <button className="form-field" type="submit">
+          Login
+        </button>
+
       </form>
     </div>
   );
