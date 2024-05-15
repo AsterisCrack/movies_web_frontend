@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-
-import Header from './Header.jsx'
-import Footer from './Footer.jsx'
+import StarRating from './StarRating';
 import { NavLink } from 'react-router-dom';
 
 const INITIAL_PAGE = 1;
@@ -71,6 +69,10 @@ function Movie({movie}) {
         </p>
         <p>
           <strong>Stock:</strong> <span>{movie.stock}</span>
+        </p>
+        <StarRating rating={movie.rating} setRating={() => {}} blocked={true} num_stars={5}/>
+        <p>
+          <strong>Rating:</strong> <span>{movie.rating}</span>
         </p>
       </div>
     </div>)
