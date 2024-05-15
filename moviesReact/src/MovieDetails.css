@@ -1,0 +1,35 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .movie-details {
+    display: flex;
+  }
+  
+  #thumbnail {
+    width: 200px;
+    height: auto;
+    margin-right: 20px;
+  }
+  
+  .info {
+    flex: 1;
+  }
+  
+  .opinions {
+    margin-top: 20px;
+  }
+  
+  .opinion-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .opinion-item p {
+    margin: 5px 0;
+  }
+  
