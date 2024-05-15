@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [values, setValues] = useState({
     username: "",
     email: "",
@@ -10,7 +12,7 @@ export default function RegisterPage() {
     name: "",
     phone: "",
   });
-
+  const [errors, setErrors] = useState({});
   const handleInputChange = (event) => {
     /* event.persist(); NO LONGER USED IN v.17*/
     event.preventDefault();
@@ -23,7 +25,6 @@ export default function RegisterPage() {
   };
 
   const [submitted, setSubmitted] = useState(false);
-  const [valid, setValid] = useState(false);
 
   const check_password_format = (password) => {
     const valid_password = /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$/.test(password);
@@ -37,6 +38,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({});
     if (values.username && values.email && values.password && values.email2 && values.password2 && values.name && values.phone) {
         // Check if the email addresses match and if the passwords match
         if ((values.email == values.email2) && (values.password == values.password2)) {
@@ -57,9 +59,14 @@ export default function RegisterPage() {
                   }),
               });
               if (response.ok) {
-                  setValid(true);
+                  navigate("/login");
               } else {
                   console.log("Registration failed");
+                  // GEt error message
+                  const data = await response.json();
+                  // Place the errors in the errors state
+                  setErrors(data);
+  
               }
             } catch (error) {
                 console.error("Error:", error);
@@ -73,94 +80,100 @@ export default function RegisterPage() {
   return (
     <div className="form-container">
       <form className="form register-form" onSubmit={handleSubmit}>
-        {submitted && valid && (
-          <div className="success-message">
-            <h3>
-              {" "}
-              Welcome {values.username}{" "}
-            </h3>
-            <div> Your registration was successful! </div>
-          </div>
-        )}
-        {!valid && (
-          <input
-            className="form-field"
-            type="text"
-            placeholder="Username"
-            name="username"
-            value={values.username}
-            onChange={handleInputChange}
-          />
-        )}
+
+        <input
+          className="form-field"
+          type="text"
+          placeholder="Username"
+          name="username"
+          value={values.username}
+          onChange={handleInputChange}
+        />
+        
 
         {submitted && !values.username && (
-          <span class="span-error" id="username-error">Please enter a username</span>
+          <span className="span-error" id="username-error">Please enter a username</span>
         )}
 
-        {!valid && (
-          <input
-            className="form-field"
-            type="email"
-            placeholder="Email"
-            name="email"
-            value={values.email}
-            onChange={handleInputChange}
-          />
+        {errors.username && (
+          <span className="span-error" id="username-error">{errors.username}</span>
         )}
+
+        
+        <input
+          className="form-field"
+          type="email"
+          placeholder="Email"
+          name="email"
+          value={values.email}
+          onChange={handleInputChange}
+        />
+        
 
         {submitted && !values.email && (
-          <span class="span-error" id="name-error">Please enter an email address</span>
+          <span className="span-error" id="name-error">Please enter an email address</span>
         )}
 
-        {!valid && (
-          <input
-            className="form-field"
-            type="email"
-            placeholder="Repeat Email"
-            name="email2"
-            value={values.email2}
-            onChange={handleInputChange}
-          />
-        )}
+        
+        <input
+          className="form-field"
+          type="email"
+          placeholder="Repeat Email"
+          name="email2"
+          value={values.email2}
+          onChange={handleInputChange}
+        />
+        
 
         {submitted && !values.email2 && (
-          <span class="span-error" id="email-error">Please repeat your email address</span>
+          <span className="span-error" id="email-error">Please repeat your email address</span>
         )}
         {submitted && values.email2 && values.email2 != values.email && (
-          <span class="span-error" id="email-error">Email addresses do not match</span>
+          <span className="span-error" id="email-error">Email addresses do not match</span>
+        )}
+        {errors.email && (
+          <span className="span-error" id="email-error">{errors.email}</span>
         )}
 
-        {!valid && (
-          <input
-            className="form-field"
-            type="text"
-            placeholder="Name"
-            name="name"
-            value={values.name}
-            onChange={handleInputChange}
-          />
-        )}
+        
+        <input
+          className="form-field"
+          type="text"
+          placeholder="Name"
+          name="name"
+          value={values.name}
+          onChange={handleInputChange}
+        />
+        
 
         {submitted && !values.name && (
-          <span class="span-error" id="name-error">Please enter your name</span>
+          <span className="span-error" id="name-error">Please enter your name</span>
         )}
 
-        {!valid && (
-          <input
-            className="form-field"
-            type="tel"
-            placeholder="Phone Number"
-            name="phone"
-            value={values.phone}
-            onChange={handleInputChange}
-          />
+        {errors.nombre && (
+          <span className="span-error" id="name-error">{errors.nombre}</span>
         )}
+
+        
+        <input
+          className="form-field"
+          type="tel"
+          placeholder="Phone Number"
+          name="phone"
+          value={values.phone}
+          onChange={handleInputChange}
+        />
+        
 
         {submitted && !values.phone && (
-          <span class="span-error" id="phone-error">Please enter your phone number</span>
+          <span className="span-error" id="phone-error">Please enter your phone number</span>
+        )}
+
+        {errors.tel && (
+          <span className="span-error" id="phone-error">{errors.tel}</span>
         )}
     
-        {!valid && (
+        
         <input
             className="form-field"
             type="password"
@@ -169,13 +182,12 @@ export default function RegisterPage() {
             value={values.password}
             onChange={handleInputChange}
         />
-        )} 
+        
 
         {submitted && !values.password && (
-            <span class="span-error" id="password-error">Please enter a password</span>
+            <span className="span-error" id="password-error">Please enter a password</span>
         )}
-
-        {!valid && (
+        
         <input
             className="form-field"
             type="password"
@@ -184,25 +196,28 @@ export default function RegisterPage() {
             value={values.password2}
             onChange={handleInputChange}
         />
-        )}
+        
 
         {submitted && !values.password2 && (
-            <span class="span-error" id="password-error">Please repeat your password</span>
+            <span className="span-error" id="password-error">Please repeat your password</span>
         )}
 
         {submitted && values.password2 && values.password2 != values.password && (
-            <span class="span-error" id="password-error">Passwords do not match</span>
+            <span className="span-error" id="password-error">Passwords do not match</span>
         )}
 
         {submitted && values.password && !check_password_format(values.password) && (values.password == values.password2) && (
-            <span class="span-error" id="password-error">Password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase</span>
+            <span className="span-error" id="password-error">Password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase</span>
         )}
 
-        {!valid && (
-          <button className="form-field" type="submit">
-            Register
-          </button>
+        {errors.password && (
+            <span className="span-error" id="password-error">{errors.password}</span>
         )}
+        
+        <button className="form-field" type="submit">
+          Register
+        </button>
+        
       </form>
     </div>
   );
