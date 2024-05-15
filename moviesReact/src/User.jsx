@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { LuPencil } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 
 export default function UserInfoPage() {
-    const [user, setUser] = useState({ username: "Asteris", email: "asteris@example.com" });
+    const navigate = useNavigate();
+    const [user, setUser] = useState({ username: "", nombre: "", tel: "", email: ""});
     const [editingUsername, setEditingUsername] = useState(false);
     const [editingEmail, setEditingEmail] = useState(false);
+    const [editingName, setEditingName] = useState(false);
+    const [editingPhone, setEditingPhone] = useState(false);
+    const [error, setError] = useState("");
 
     // For changing password
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -20,7 +25,6 @@ export default function UserInfoPage() {
     const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] = useState(false);
     const [deleteConfirmationPassword, setDeleteConfirmationPassword] = useState("");
     const [deleteConfirmationError, setDeleteConfirmationError] = useState("");
-    const [showDeleteConfirmationError, setShowDeleteConfirmationError] = useState(false);
     
     // Get the current user information
     useEffect(() => {
@@ -46,16 +50,63 @@ export default function UserInfoPage() {
         setEditingEmail(true);
     };
 
+    const handleNameEdit = () => {
+        setEditingName(true);
+    };
+
+    const handlePhoneEdit = () => {
+        setEditingPhone(true);
+    };
+
+    const updateUserData = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/apps/users/me/', {
+                method: 'PATCH',
+                credentials: 'include', // This will include the session cookie in the request
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: user.username,
+                    email: user.email,
+                    nombre: user.nombre,
+                    tel: user.tel
+                })
+            });
+    
+            if (!response.ok) {
+                const data = await response.json();
+                setError(data.message);
+            }
+    
+            return await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
     const handleUpdateUsername = (e) => {
         e.preventDefault();
         setEditingUsername(false);
-        // Update username in database or state management system
+        updateUserData();
     };
-
+    
     const handleUpdateEmail = (e) => {
         e.preventDefault();
         setEditingEmail(false);
-        // Update email in database or state management system
+        updateUserData();
+    };
+    
+    const handleUpdateName = (e) => {
+        e.preventDefault();
+        setEditingName(false);
+        updateUserData();
+    };
+
+    const handleUpdatePhone = (e) => {
+        e.preventDefault();
+        setEditingPhone(false);
+        updateUserData();
     };
 
     const handlePasswordInputchange = (e) => {
@@ -70,7 +121,6 @@ export default function UserInfoPage() {
     const handleChangePassword = () => {
         // Reset password values
         setPasswordValues({
-            password: "",
             newPassword: "",
             newPassword2: "",
         });
@@ -83,12 +133,11 @@ export default function UserInfoPage() {
         // Reset delete confirmation password
         setDeleteConfirmationPassword("");
         setDeleteConfirmationError("");
-        setShowDeleteConfirmationError(false);
         setShowDeleteConfirmationModal(true);
         setShowChangePasswordModal(false);
     };
 
-    const handleChangePasswordSubmit = (e) => {
+    const handleChangePasswordSubmit = async (e) => {
         e.preventDefault();
         if (passwordValues.newPassword !== passwordValues.newPassword2) {
             setPasswordError("Passwords do not match");
@@ -99,11 +148,59 @@ export default function UserInfoPage() {
         setShowPasswordError(false);
         setShowChangePasswordModal(false);
         // Handle password change logic
+        try {
+            const response = await fetch('http://127.0.0.1:8000/apps/users/me/', {
+                method: 'PATCH',
+                credentials: 'include', // This will include the session cookie in the request
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    password: passwordValues.newPassword
+                })
+            });
+    
+            if (!response.ok) {
+                const data = await response.json();
+                setPasswordError(data.message);
+                return;
+            }
+    
+            const data = await response.json();
+            console.log(data);
+        }
+        catch (error) {
+            console.error('Error:', error);
+        }
     };
 
+    const deleteUserAccount = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/apps/users/me/', {
+                method: 'DELETE',
+                credentials: 'include', // This will include the session cookie in the request
+            });
+    
+            if (!response.ok) {
+                throw new Error('HTTP status ' + response.status);
+            }
+    
+            // Handle what should happen after the account is deleted
+            // For example, redirect the user to the login page
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
     const handleDeleteAccountConfirm = () => {
-        // Handle account deletion logic
+        setDeleteConfirmationError("");
+        if (deleteConfirmationPassword !== "Delete") {
+            setDeleteConfirmationError("Incorrect confirmation text");
+            return;
+        }
+        deleteUserAccount();
         setShowDeleteConfirmationModal(false);
+        navigate("/login");
     };
 
     return (
@@ -127,6 +224,7 @@ export default function UserInfoPage() {
                     </h1>
                 )}
             </div>
+            {error && <span className="span-error form-error">{error}</span>}
             <div className="user-info-email-wrapper">
                 {editingEmail ? (
                     <form onSubmit={handleUpdateEmail}>
@@ -143,6 +241,44 @@ export default function UserInfoPage() {
                         <span className="span-button" 
                         style={{ cursor: "pointer" }}
                         onClick={handleEmailEdit}><LuPencil /></span>
+                    </p>
+                )}
+            </div>
+            <div className="user-info-name-wrapper">
+                {editingName ? (
+                    <form onSubmit={handleUpdateName}>
+                        <input
+                            type="text"
+                            value={user.nombre}
+                            onChange={(e) => setUser({ ...user, nombre: e.target.value })}
+                        />
+                        <button type="submit">Save</button>
+                    </form>
+                ) : (
+                    <p>
+                        {user.nombre}
+                        <span className="span-button" 
+                        style={{ cursor: "pointer" }}
+                        onClick={handleNameEdit}><LuPencil /></span>
+                    </p>
+                )}
+            </div>
+            <div className="user-info-phone-wrapper">
+                {editingPhone ? (
+                    <form onSubmit={handleUpdatePhone}>
+                        <input
+                            type="text"
+                            value={user.tel}
+                            onChange={(e) => setUser({ ...user, tel: e.target.value })}
+                        />
+                        <button type="submit">Save</button>
+                    </form>
+                ) : (
+                    <p>
+                        {user.tel}
+                        <span className="span-button" 
+                        style={{ cursor: "pointer" }}
+                        onClick={handlePhoneEdit}><LuPencil /></span>
                     </p>
                 )}
             </div>
@@ -167,7 +303,6 @@ export default function UserInfoPage() {
                 handleDeleteAccountConfirm={handleDeleteAccountConfirm}
                 deleteConfirmationPassword={deleteConfirmationPassword}
                 setDeleteConfirmationPassword={setDeleteConfirmationPassword}
-                showDeleteConfirmationError={showDeleteConfirmationError}
                 deleteConfirmationError={deleteConfirmationError}
             />
         </main>
@@ -215,14 +350,6 @@ function ChangePasswordModal({ handleChangePasswordSubmit, handlePasswordInputch
             <input
                 className="form-field"
                 type="password"
-                value={passwordValues.password}
-                name="password"
-                placeholder="Current password"
-                onChange={handlePasswordInputchange}
-            />
-            <input
-                className="form-field"
-                type="password"
                 value={passwordValues.newPassword}
                 name="newPassword"
                 placeholder="New password"
@@ -236,25 +363,26 @@ function ChangePasswordModal({ handleChangePasswordSubmit, handlePasswordInputch
                 placeholder="Repeat new password"
                 onChange={handlePasswordInputchange}
             />
-            {showPasswordError && <span className="form-error">{passwordError}</span>}
+            {showPasswordError && <span className="span-error form-error">{passwordError}</span>}
             <button className="form-field" type="submit">Change Password</button>
         </form>
     )});
 }
 
-function DeleteConfirmationModal({ handleDeleteAccountConfirm, deleteConfirmationPassword, setDeleteConfirmationPassword, showDeleteConfirmationError, deleteConfirmationError, show, setShow}) {
+function DeleteConfirmationModal({ handleDeleteAccountConfirm, deleteConfirmationPassword, setDeleteConfirmationPassword, deleteConfirmationError, show, setShow}) {
     return Modal({ show, setShow, children: (
         <form className="form delete-account-form" onSubmit={handleDeleteAccountConfirm}>
             <p>Are you sure you want to delete your account?</p>
+            <p>Type "Delete" to confirm</p>
             <input
                 className="form-field"
-                type="password"
+                type="text"
                 value={deleteConfirmationPassword}
                 name="password"
                 onChange={(e) => setDeleteConfirmationPassword(e.target.value)}
-                placeholder="Enter your password to confirm"
+                placeholder=""
             />
-            {showDeleteConfirmationError && <span className="form-error">{deleteConfirmationError}</span>}
+            {deleteConfirmationError != "" && <span className="span-error form-error">{deleteConfirmationError}</span>}
             <button className="form-field" type="submit">Delete Account</button>
         </form>
     )});
