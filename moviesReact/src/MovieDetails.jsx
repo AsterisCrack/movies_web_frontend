@@ -1,12 +1,62 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import StarRating from './StarRating';
+import GetUserData from './GetUserData';
+import { useNavigate } from "react-router-dom";
 import './MovieDetails.css'; // Importamos el archivo CSS para estilos
 
+function OpinionsList({ opinions }) {
+  return (
+    <>
+    <ul>
+      {opinions.map((opinion) => (
+        <OpinionItem key={opinion.id} opinion={opinion} />
+      ))}
+
+    </ul>
+    {opinions.length === 0 && <p>No opinions yet</p>}
+    </>
+  );
+}
+function OpinionItem({ opinion }) {
+  const [username, setUsername] = useState('');
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/apps/users/${opinion.user}/`);
+        if (!response.ok) {
+          throw new Error('Unable to fetch username');
+        }
+        const data = await response.json();
+        setUsername(data.username);
+      }
+      catch (error) {
+        console.error('Error fetching username:', error);
+      }
+    }
+    fetchUsername();
+  }
+  , [opinion.user]);
+
+  return (
+    <li className="opinion-item">
+      <p><strong>{username}</strong></p>
+      <p>{opinion.comment}</p>
+      <StarRating rating={opinion.calification/2} setRating={() => {}} blocked={true} num_stars={5}/>
+    </li>
+  );
+}
+
 function MovieDetails() {
+  const navigate = useNavigate(); 
+  const [user, setUser] = useState({});
+  GetUserData({setUser});
   const { id } = useParams();
   const [movie, setMovie] = useState({});
   const [rating, setRating] = useState(0);
+  const [opinion, setOpinion] = useState('');
+  const [ratingError, setRatingError] = useState('');
+  const [opinionError, setOpinionError] = useState('');
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -17,8 +67,7 @@ function MovieDetails() {
         }
         const data = await response.json();
         setMovie(data);
-        // Setting a default rating for demonstration
-        setRating(4);
+        setRating(data.calification/2);
       } catch (error) {
         console.error('Error fetching movie details:', error);
       }
@@ -26,9 +75,52 @@ function MovieDetails() {
     fetchMovieDetails();
   }, [id]);
 
+  const handleOpinionSubmit = async (e) => {
+    e.preventDefault();
+    setOpinionError('');
+    setRatingError('');
+    if (rating === 0) {
+      setRatingError('Please enter a rating');
+    }
+    else {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/apps/movies/${id}/opinions/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: user.id,
+            comment: opinion,
+            calification: rating*2,
+          }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          if (data.comment) {
+            setOpinionError(data.comment);
+          }
+          if (data.calification) {
+            setRatingError(data.calification);
+          }
+        }
+        else {
+          console.log(response)
+          const data = await response.json();
+          console.log('Opinion added:', data);
+          setOpinion('');
+          //navigate(`/movie/${id}`);
+        }
+      }
+      catch (error) {
+        console.error('Error adding opinion:', error);
+      }
+    }
+  }
   return (
     <div className="container">
-      <main className="movie-details">
+      <main className="movie-details movie-details-focus">
         <img src={movie.link_image} alt="Thumbnail" id="thumbnail" />
         <div className="info">
           <h2>{movie.title}</h2>
@@ -39,21 +131,29 @@ function MovieDetails() {
           <p>
             <strong>Genre:</strong> <span>{movie.genre}</span>
           </p>
-          <StarRating rating={rating} setRating={setRating} blocked={false} num_stars={5}/>
+          <p>
+            <strong>Rating:</strong> <span>{Math.round(movie.calification * 100) / 100}</span>
+          </p>
+          <StarRating rating={movie.calification/2} setRating={setRating} blocked={true} num_stars={5}/>
           <div className="opinions">
             <h3>Opinions</h3>
-            <ul>
-              {movie.opinions && movie.opinions.map(opinion => (
-                <li key={opinion.id} className="opinion-item">
-                  <p><strong>User:</strong> {opinion.user}</p>
-                  <p><strong>Comment:</strong> {opinion.comment}</p>
-                  <p><strong>Rating:</strong> {opinion.calification}</p>
-                  <p><strong>Created At:</strong> {opinion.created_at}</p>
-                </li>
-              ))}
-            </ul>
+            <form className="form opinion-form" onSubmit={handleOpinionSubmit}>
+              <textarea
+                placeholder="Enter your opinion"
+                className='form-field'
+                value={opinion}
+                onChange={(e) => setOpinion(e.target.value)}
+              ></textarea>
+              {opinionError && <span className="span-error">{opinionError}</span>}
+              <StarRating rating={rating} setRating={setRating} blocked={false} num_stars={5}/>
+              {ratingError && <span className="span-error">{ratingError}</span>}
+              <button className='form-field' type="submit">Add Opinion</button>
+            </form>
+            {movie.opinions && movie.opinions.length > 0 && <OpinionsList opinions={movie.opinions} />}
+            {movie.opinions && movie.opinions.length === 0 && <p>No opinions yet</p>}
           </div>
         </div>
+        
       </main>
     </div>
   );

@@ -4,14 +4,28 @@
     padding: 20px;
   }
   
-  .movie-details {
+  .movie-details-focus {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    flex-direction: column;
   }
   
   #thumbnail {
     width: 200px;
     height: auto;
     margin-right: 20px;
+  }
+
+  .movie-details-focus #thumbnail {
+    width: 60%;
+    height: auto;
+    margin: 0;
+  }
+
+  .movie-details-focus h2 {
+    font-size: 2.2em;
   }
   
   .info {
