@@ -31,16 +31,29 @@
   .info {
     flex: 1;
   }
-  
+
   .opinions {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    width: 80%;
+    align-items: stretch;
+  }
+
+  .opinions textarea {
+    width: 100%;
+    height: 60px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px;
   }
   
   .opinion-item {
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border-bottom: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 10px;
+    list-style: none;
   }
   
   .opinion-item p {

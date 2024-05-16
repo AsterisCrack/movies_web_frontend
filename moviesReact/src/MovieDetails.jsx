@@ -46,6 +46,7 @@ function AdminUpdateMovie({ movie }) {
       else {
         form.reset();
         setSubmitOk('Movie updated successfully');
+        await fetchMovieDetails();
       }
     } catch (error) {
       console.error('Error adding movie:', error);
@@ -63,7 +64,7 @@ function AdminUpdateMovie({ movie }) {
       <input className="form-field" type="number" name="calification" placeholder={movie.calification} min="0" max="10"/>
       {addError && <span className="span-error">{addError}</span>}
       {submitOk && <span className="span-ok">{submitOk}</span>}
-      <button type="submit">Add movie</button>
+      <button type="submit">Update movie</button>
       
     </form>
   </div>
