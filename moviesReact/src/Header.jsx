@@ -32,7 +32,7 @@ export default function Header() {
                 </li>
                 
                 <div className="dropdown">
-                    <button className="dropbtn">{user.username ? user.username : "User"}</button>
+                    <li className="dropbtn">{user.username ? user.username : "User"}</li>
                     <div className="dropdown-content">
                         {user.username && (
                             <>

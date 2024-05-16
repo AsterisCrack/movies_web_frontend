@@ -30,8 +30,11 @@ function ListPage({ movieList, currentPage, setCurrentPage, title, setTitle, des
 function AdminAddMovie() {
 
   const [addError, setAddError] = useState('');
+  const [submitOk, setSubmitOk] = useState('');
 
   const handleSubmit = async (e) => {
+    setAddError('');
+    setSubmitOk('');
     e.preventDefault();
     const form = e.target;
     const data = new FormData(form);
@@ -59,7 +62,12 @@ function AdminAddMovie() {
           setAddError(`${key}: ${data[key]}`);
       });
       }
-      //form.reset();
+      else {
+        form.reset();
+        setSubmitOk('Movie added successfully');
+        // Reload the page
+        window.location.reload();
+      }
     } catch (error) {
       console.error('Error adding movie:', error);
     }
@@ -79,25 +87,6 @@ function AdminAddMovie() {
       
     </form>
   </div>
-}
-
-
-
-function PageFilter({ currentPage, setCurrentPage }) {
-  function changePage(page) {
-    page = Math.max(1, page);
-    setCurrentPage(page);
-  }
-
-  return (
-    <>
-      <div className="buttons">
-        <button onClick={() => changePage(currentPage - 1)} disabled={currentPage === INITIAL_PAGE}>&lt;</button>
-        <input type="number" value={currentPage} onChange={(e) => changePage(e.target.value)} />
-        <button onClick={() => changePage(currentPage + 1)}>&gt;</button>
-      </div>
-    </>
-  );
 }
 
 function Filter({ title, setTitle, description, setDescription, genre, setGenre, order, setOrder }) {
@@ -179,7 +168,6 @@ function MovieList({ movieList, titleFilter, descriptionFilter, genreFilter, ord
 
 function Movie({ movie, user }) {
   const handleDelete = async () => {
-    console.log(movie.id);
     // Open a confirmation dialog
     if (window.confirm(`Are you sure you want to delete ${movie.title}?`)) {
       try {
