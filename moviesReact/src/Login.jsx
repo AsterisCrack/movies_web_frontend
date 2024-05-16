@@ -29,6 +29,7 @@ export default function RegisterPage() {
       // Send the data to the server
       const response = await fetch("http://127.0.0.1:8000/apps/users/login/", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

@@ -1,10 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import GetUserData from "./GetUserData";
 
 export default function Header() {
     const [user, setUser] = useState({});
-    GetUserData({setUser});
 
     const logout = async () => {
         const response = await fetch("http://127.0.0.1:8000/apps/users/logout/", {
@@ -19,8 +18,9 @@ export default function Header() {
             setUser({});
         }
     }
-    console.log(user);
+    
     return (<header>
+        <GetUserData setUser={setUser} />
         <h1>AG Movies</h1>
         <nav className="header-list">
             <ul>
