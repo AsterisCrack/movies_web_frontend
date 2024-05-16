@@ -3,7 +3,72 @@ import { useParams } from 'react-router-dom';
 import StarRating from './StarRating';
 import GetUserData from './GetUserData';
 import { useNavigate } from "react-router-dom";
+import { LuPencil } from "react-icons/lu";
 import './MovieDetails.css'; // Importamos el archivo CSS para estilos
+
+function AdminUpdateMovie({ movie }) {
+
+  const [addError, setAddError] = useState('');
+  const [submitOk, setSubmitOk] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAddError('');
+    setSubmitOk('');
+    const form = e.target;
+    const data = new FormData(form);
+    const payload = {
+      title: data.get('title'),
+      description: data.get('description'),
+      genre: data.get('genre'),
+      link_image: data.get('link_image'),
+      director: data.get('director'),
+      calification: data.get('calification'),
+    };
+    //delete empty fields of the payload
+    Object.keys(payload).forEach(key => payload[key] === "" && delete payload[key]);
+    console.log(payload);
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/apps/movies/update/${movie.id}/` , {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        Object.keys(data).forEach((key) => {
+          setAddError(`${key}: ${data[key]}`);
+        });
+      }
+      else {
+        form.reset();
+        setSubmitOk('Movie updated successfully');
+      }
+    } catch (error) {
+      console.error('Error adding movie:', error);
+    }
+  }
+
+  return <div className="container update-movie-form-container">
+    <h2>Update movie</h2>
+    <form className="form update-movie-form" onSubmit={handleSubmit}>
+      <input className="form-field" type="text" name="title" placeholder={movie.title}/>
+      <input className="form-field" type="text" name="description" placeholder={movie.description}/>
+      <input className="form-field" type="text" name="genre" placeholder={movie.genre}/>
+      <input className="form-field" type="text" name="link_image" placeholder={movie.link_image}/>
+      <input className="form-field" type="text" name="director" placeholder={movie.director}/>
+      <input className="form-field" type="number" name="calification" placeholder={movie.calification} min="0" max="10"/>
+      {addError && <span className="span-error">{addError}</span>}
+      {submitOk && <span className="span-ok">{submitOk}</span>}
+      <button type="submit">Add movie</button>
+      
+    </form>
+  </div>
+}
+
 
 function OpinionsList({ opinions }) {
   return (
@@ -135,24 +200,29 @@ function MovieDetails() {
             <strong>Rating:</strong> <span>{Math.round(movie.calification * 100) / 100}</span>
           </p>
           <StarRating rating={movie.calification/2} setRating={setRating} blocked={true} num_stars={5}/>
-          <div className="opinions">
-            <h3>Opinions</h3>
-            <form className="form opinion-form" onSubmit={handleOpinionSubmit}>
-              <textarea
-                placeholder="Enter your opinion"
-                className='form-field'
-                value={opinion}
-                onChange={(e) => setOpinion(e.target.value)}
-              ></textarea>
-              {opinionError && <span className="span-error">{opinionError}</span>}
-              <StarRating rating={rating} setRating={setRating} blocked={false} num_stars={5}/>
-              {ratingError && <span className="span-error">{ratingError}</span>}
-              <button className='form-field' type="submit">Add Opinion</button>
-            </form>
-            {movie.opinions && movie.opinions.length > 0 && <OpinionsList opinions={movie.opinions} />}
-            {movie.opinions && movie.opinions.length === 0 && <p>No opinions yet</p>}
-          </div>
         </div>
+        {user.username === 'admin' && <AdminUpdateMovie movie={movie} />}
+        <div className="opinions">
+          <h3>Opinions</h3>
+          {user.username && (
+          <form className="form opinion-form" onSubmit={handleOpinionSubmit}>
+            <textarea
+              placeholder="Enter your opinion"
+              className='form-field'
+              value={opinion}
+              onChange={(e) => setOpinion(e.target.value)}
+            ></textarea>
+            {opinionError && <span className="span-error">{opinionError}</span>}
+            <StarRating rating={rating} setRating={setRating} blocked={false} num_stars={5}/>
+            {ratingError && <span className="span-error">{ratingError}</span>}
+            <button className='form-field' type="submit">Add Opinion</button>
+          </form>
+          )}
+          {!user.username && <p>Login to add an opinion</p>}
+          {movie.opinions && movie.opinions.length > 0 && <OpinionsList opinions={movie.opinions} />}
+          {movie.opinions && movie.opinions.length === 0 && <p>No opinions yet</p>}
+        </div>
+        
         
       </main>
     </div>
@@ -160,5 +230,3 @@ function MovieDetails() {
 }
 
 export default MovieDetails;
-
-
