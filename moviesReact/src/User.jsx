@@ -9,7 +9,7 @@ export default function UserInfoPage() {
     const [editingEmail, setEditingEmail] = useState(false);
     const [editingName, setEditingName] = useState(false);
     const [editingPhone, setEditingPhone] = useState(false);
-    const [error, setError] = useState("");
+    const [userError, setError] = useState("");
 
     // For changing password
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -26,9 +26,7 @@ export default function UserInfoPage() {
     const [deleteConfirmationPassword, setDeleteConfirmationPassword] = useState("");
     const [deleteConfirmationError, setDeleteConfirmationError] = useState("");
     
-    // Get the current user information
-    useEffect(() => {
-        // Fetch user information from http://apps/users/me with session cookie
+    const fetchUser = async () => {
         fetch('http://127.0.0.1:8000/apps/users/me/', {
             method: 'GET',
             credentials: 'include', // This will include the session cookie in the request
@@ -40,6 +38,10 @@ export default function UserInfoPage() {
             // Set other state variables if needed
         })
         .catch(error => console.error('Error:', error));
+    };
+    // Get the current user information
+    useEffect(() => {
+        fetchUser();
     }, []);
 
     const handleUsernameEdit = () => {
@@ -59,6 +61,7 @@ export default function UserInfoPage() {
     };
 
     const updateUserData = async () => {
+        setError("");
         try {
             const response = await fetch('http://127.0.0.1:8000/apps/users/me/', {
                 method: 'PATCH',
@@ -76,10 +79,23 @@ export default function UserInfoPage() {
     
             if (!response.ok) {
                 const data = await response.json();
-                setError(data.message);
+                if (data.username) {
+                    setError(data.username);
+                }
+                if (data.email) {
+                    setError(data.email);
+                }
+                if (data.nombre) {
+                    setError(data.nombre);
+                }
+                if (data.tel) {
+                    setError(data.tel);
+                }
+
             }
-    
-            return await response.json();
+            else {
+                return await response.json();
+            }
         } catch (error) {
             console.error('Error:', error);
         }
@@ -89,24 +105,28 @@ export default function UserInfoPage() {
         e.preventDefault();
         setEditingUsername(false);
         updateUserData();
+        fetchUser();
     };
     
     const handleUpdateEmail = (e) => {
         e.preventDefault();
         setEditingEmail(false);
         updateUserData();
+        fetchUser();
     };
     
     const handleUpdateName = (e) => {
         e.preventDefault();
         setEditingName(false);
         updateUserData();
+        fetchUser();
     };
 
     const handleUpdatePhone = (e) => {
         e.preventDefault();
         setEditingPhone(false);
         updateUserData();
+        fetchUser();
     };
 
     const handlePasswordInputchange = (e) => {
@@ -224,7 +244,7 @@ export default function UserInfoPage() {
                     </h1>
                 )}
             </div>
-            {error && <span className="span-error form-error">{error}</span>}
+            {userError && <span className="span-error form-error">{userError}</span>}
             <div className="user-info-email-wrapper">
                 {editingEmail ? (
                     <form onSubmit={handleUpdateEmail}>
