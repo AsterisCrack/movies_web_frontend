@@ -124,23 +124,55 @@ function MovieDetails() {
   const [opinion, setOpinion] = useState('');
   const [ratingError, setRatingError] = useState('');
   const [opinionError, setOpinionError] = useState('');
+  const [submitOk, setSubmitOk] = useState('');
+
+  const fetchMovieDetails = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/apps/movies/${id}`);
+      if (!response.ok) {
+        throw new Error('Unable to fetch movie details');
+      }
+      const data = await response.json();
+      setMovie(data);
+      setRating(data.calification/2);
+    } catch (error) {
+      console.error('Error fetching movie details:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/apps/movies/${id}`);
-        if (!response.ok) {
-          throw new Error('Unable to fetch movie details');
-        }
-        const data = await response.json();
-        setMovie(data);
-        setRating(data.calification/2);
-      } catch (error) {
-        console.error('Error fetching movie details:', error);
-      }
-    };
     fetchMovieDetails();
   }, [id]);
+
+  const handleRatingSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/apps/movies/${id}/rate/`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          calification: rating*2,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data);
+      }
+      else {
+        const data = await response.json();
+        setSubmitOk('Rating added successfully');
+        console.log('Rating added:', data);
+        await fetchMovieDetails();
+      }
+
+    } catch (error) {
+      console.error('Error adding rating:', error);
+    }
+  }
 
   const handleOpinionSubmit = async (e) => {
     e.preventDefault();
@@ -153,6 +185,7 @@ function MovieDetails() {
       try {
         const response = await fetch(`http://127.0.0.1:8000/apps/movies/${id}/opinions/`, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -173,11 +206,11 @@ function MovieDetails() {
           }
         }
         else {
-          console.log(response)
           const data = await response.json();
           console.log('Opinion added:', data);
           setOpinion('');
-          //navigate(`/movie/${id}`);
+          setSubmitOk('Opinion added successfully')
+          await fetchMovieDetails();
         }
       }
       catch (error) {
@@ -207,7 +240,7 @@ function MovieDetails() {
         <div className="opinions">
           <h3>Opinions</h3>
           {user.username && (
-          <form className="form opinion-form" onSubmit={handleOpinionSubmit}>
+          <form className="form opinion-form" onSubmit={opinion ? handleOpinionSubmit : handleRatingSubmit}>
             <textarea
               placeholder="Enter your opinion"
               className='form-field'
@@ -217,6 +250,7 @@ function MovieDetails() {
             {opinionError && <span className="span-error">{opinionError}</span>}
             <StarRating rating={rating} setRating={setRating} blocked={false} num_stars={5}/>
             {ratingError && <span className="span-error">{ratingError}</span>}
+            {submitOk && <span className="span-ok">{submitOk}</span>}
             <button className='form-field' type="submit">Add Opinion</button>
           </form>
           )}
