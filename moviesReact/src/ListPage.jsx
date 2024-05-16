@@ -14,7 +14,7 @@ function ListPage({ movieList, currentPage, setCurrentPage, title, setTitle, des
       <Filter 
         title={title} setTitle={setTitle} 
         description={description} setDescription={setDescription} 
-        rating={rating} setRating={setRating} 
+        genre={genre} setGenre={setGenre} 
         order={order} setOrder={setOrder}/>
       <MovieList 
         movieList={movieList} 
