@@ -83,6 +83,7 @@ function AdminAddMovie() {
       <input className="form-field" type="text" name="director" placeholder="Director" required/>
       <input className="form-field" type="number" name="calification" placeholder="Calification" min="0" max="10"required/>
       {addError && <span className="span-error">{addError}</span>}
+      {submitOk && <span className="span-ok">{submitOk}</span>}
       <button type="submit">Add movie</button>
       
     </form>
