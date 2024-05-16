@@ -90,12 +90,14 @@ function OpinionItem({ opinion }) {
       try {
         const response = await fetch(`http://127.0.0.1:8000/apps/users/${opinion.user}/`);
         if (!response.ok) {
+          setUsername('Deleted Account');
           throw new Error('Unable to fetch username');
         }
         const data = await response.json();
         setUsername(data.username);
       }
       catch (error) {
+        setUsername('Deleted Account');
         console.error('Error fetching username:', error);
       }
     }
